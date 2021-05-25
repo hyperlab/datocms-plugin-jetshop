@@ -83,7 +83,7 @@ async function getContentPages() {
         id: `page:${page.id}`,
         title: page.name,
         image,
-        url: page.primaryRoute ? `${baseUrl}/${page.primaryRoute.path}` : null,
+        url: page.primaryRoute ? `${baseUrl}${page.primaryRoute.path}` : null,
       };
     });
   }
@@ -125,7 +125,7 @@ export async function search(term, contentTypes) {
             title: product.name,
             image,
             url: product.primaryRoute
-              ? `${baseUrl}/${product.primaryRoute.path}`
+              ? `${baseUrl}${product.primaryRoute.path}`
               : null,
           });
         });
@@ -141,7 +141,7 @@ export async function search(term, contentTypes) {
             title: category.name,
             image,
             url: category.primaryRoute
-              ? `${baseUrl}/${category.primaryRoute.path}`
+              ? `${baseUrl}${category.primaryRoute.path}`
               : null,
           });
         });
@@ -195,7 +195,7 @@ query product($id: Int!) {
       return {
         title: name,
         image: images.length ? images[0].url : null,
-        url: primaryRoute ? `${baseUrl}/${primaryRoute.path}` : null,
+        url: primaryRoute ? `${baseUrl}${primaryRoute.path}` : null,
         type: "product",
       };
     } else {
@@ -229,7 +229,7 @@ query category($id: Int!) {
       return {
         title: name,
         image: images.length ? images[0].url : null,
-        url: primaryRoute ? `${baseUrl}/${primaryRoute.path}` : null,
+        url: primaryRoute ? `${baseUrl}${primaryRoute.path}` : null,
         type: "category",
       };
     } else {
@@ -263,7 +263,7 @@ query page($id: Int!) {
       return {
         title: name,
         image: images.length ? images[0].url : null,
-        url: primaryRoute ? `${baseUrl}/${primaryRoute.path}` : null,
+        url: primaryRoute ? `${baseUrl}${primaryRoute.path}` : null,
         type: "page",
       };
     } else {
