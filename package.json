@@ -1,7 +1,67 @@
 {
   "name": "datocms-plugin-jetshop",
   "version": "1.0.0",
-  "private": true,
+  "homepage": "https://github.com/hyperlab/datocms-plugin-jetshop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperlab/datocms-plugin-jetshop"
+  },
+  "keywords": [
+    "datocms",
+    "datocms-plugin",
+    "field-editor",
+    "jetshop"
+  ],
+  "description": "A string field editor to lookup products, categories and content pages from Jetshop.",
+  "datoCmsPlugin": {
+    "title": "Jetshop",
+    "previewImage": "public/preview.gif",
+    "entryPoint": "public/index.html",
+    "fieldTypes": [
+      "string"
+    ],
+    "pluginType": "field_editor",
+    "parameters": {
+      "global": [
+        {
+          "id": "shopid",
+          "label": "Shop ID",
+          "type": "string",
+          "hint": "Enter the ID for the Jetshop instance. If you don't know this, ask Jetshop."
+        },
+        {
+          "id": "token",
+          "label": "API token",
+          "type": "string",
+          "hint": "The API token used when connecting to Jetshop's Store API."
+        }
+      ],
+      "instance": [
+        {
+          "id": "searchProducts",
+          "label": "Search products",
+          "type": "boolean",
+          "hint": "Wether to show products in the result"
+        },
+        {
+          "id": "searchCategories",
+          "label": "Search categories",
+          "type": "boolean",
+          "hint": "Wether to show categories in the result"
+        },
+        {
+          "id": "searchContentPages",
+          "label": "Search content pages",
+          "type": "boolean",
+          "hint": "Wether to show content pages in the result"
+        }
+      ]
+    }
+  },
+  "files": [
+    "public/*",
+    "README.md"
+  ],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",

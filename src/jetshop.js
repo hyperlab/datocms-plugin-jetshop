@@ -57,6 +57,9 @@ let contentPages = [];
 async function getContentPages() {
   const result = await jetshopFetch(`
   query {
+    channel {
+      url
+    }
     pages {
       id
       name
@@ -71,6 +74,8 @@ async function getContentPages() {
   `);
 
   if (result && result.data && result.data.pages) {
+    const baseUrl = result.data.channel.url;
+
     return result.data.pages.map((page) => {
       const image = page.images.length > 0 ? page.images[0].url : null;
 
@@ -78,7 +83,7 @@ async function getContentPages() {
         id: `page:${page.id}`,
         title: page.name,
         image,
-        url: page.primaryRoute ? page.primaryRoute.path : null,
+        url: page.primaryRoute ? `${baseUrl}/${page.primaryRoute.path}` : null,
       };
     });
   }
@@ -95,6 +100,9 @@ export async function search(term, contentTypes) {
   ) {
     const query = `
       query Search($term: String!) {
+        channel {
+          url
+        }
         search(term: $term) {
           ${contentTypes.includes("products") ? products : ""}
           ${contentTypes.includes("categories") ? categories : ""}
@@ -105,6 +113,8 @@ export async function search(term, contentTypes) {
     const result = await jetshopFetch(query, { term });
 
     if (result && result.data && result.data.search) {
+      const baseUrl = result.data.channel.url;
+
       if (contentTypes.includes("products")) {
         result.data.search.products.result.forEach((product) => {
           const image =
@@ -114,7 +124,9 @@ export async function search(term, contentTypes) {
             id: `product:${product.id}`,
             title: product.name,
             image,
-            url: product.primaryRoute ? product.primaryRoute.path : null,
+            url: product.primaryRoute
+              ? `${baseUrl}/${product.primaryRoute.path}`
+              : null,
           });
         });
       }
@@ -128,7 +140,9 @@ export async function search(term, contentTypes) {
             id: `category:${category.id}`,
             title: category.name,
             image,
-            url: category.primaryRoute ? category.primaryRoute.path : null,
+            url: category.primaryRoute
+              ? `${baseUrl}/${category.primaryRoute.path}`
+              : null,
           });
         });
       }
@@ -157,6 +171,9 @@ export async function get(identifier) {
     const result = await jetshopFetch(
       `
 query product($id: Int!) {
+  channel {
+    url
+  }
   product(id: $id) {
     name
     images {
@@ -172,12 +189,13 @@ query product($id: Int!) {
     );
 
     if (result && result.data && result.data.product) {
+      const baseUrl = result.data.channel.url;
       const { name, images, primaryRoute } = result.data.product;
 
       return {
         title: name,
         image: images.length ? images[0].url : null,
-        url: primaryRoute ? primaryRoute.path : null,
+        url: primaryRoute ? `${baseUrl}/${primaryRoute.path}` : null,
         type: "product",
       };
     } else {
@@ -187,6 +205,9 @@ query product($id: Int!) {
     const result = await jetshopFetch(
       `
 query category($id: Int!) {
+  channel {
+    url
+  }
   category(id: $id) {
     name
     images {
@@ -202,12 +223,13 @@ query category($id: Int!) {
     );
 
     if (result && result.data && result.data.category) {
+      const baseUrl = result.data.channel.url;
       const { name, images, primaryRoute } = result.data.category;
 
       return {
         title: name,
         image: images.length ? images[0].url : null,
-        url: primaryRoute ? primaryRoute.path : null,
+        url: primaryRoute ? `${baseUrl}/${primaryRoute.path}` : null,
         type: "category",
       };
     } else {
@@ -217,6 +239,9 @@ query category($id: Int!) {
     const result = await jetshopFetch(
       `
 query page($id: Int!) {
+  channel {
+    url
+  }
   page(id: $id) {
     name
     images {
@@ -232,12 +257,13 @@ query page($id: Int!) {
     );
 
     if (result && result.data && result.data.page) {
+      const baseUrl = result.data.channel.url;
       const { name, images, primaryRoute } = result.data.page;
 
       return {
         title: name,
         image: images.length ? images[0].url : null,
-        url: primaryRoute ? primaryRoute.path : null,
+        url: primaryRoute ? `${baseUrl}/${primaryRoute.path}` : null,
         type: "page",
       };
     } else {

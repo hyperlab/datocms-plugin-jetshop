@@ -24,10 +24,10 @@ DatoCmsPlugin.init((plugin) => {
     config(plugin.parameters.global.token, plugin.parameters.global.shopid);
   }
 
-  if (plugin.parameters.instance.showProducts) contentTypes.push("products");
-  if (plugin.parameters.instance.showCategories)
+  if (plugin.parameters.instance.searchProducts) contentTypes.push("products");
+  if (plugin.parameters.instance.searchCategories)
     contentTypes.push("categories");
-  if (plugin.parameters.instance.showContentPages)
+  if (plugin.parameters.instance.searchContentPages)
     contentTypes.push("contentPages");
 
   new Field({
