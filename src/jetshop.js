@@ -1,9 +1,11 @@
 let token = null;
 let shopid = null;
+let channelid = null;
 
-export function config(t, s) {
+export function config(t, s, c) {
   token = t;
   shopid = s;
+  channelid = c;
 }
 
 const products = `
@@ -44,6 +46,7 @@ async function jetshopFetch(query, variables) {
       token,
       shopid,
       preview: true,
+      channelid,
     },
     body: JSON.stringify({
       query,
@@ -80,7 +83,8 @@ async function getContentPages() {
       const image = page.images.length > 0 ? page.images[0].url : null;
 
       return {
-        id: `page:${page.id}`,
+        type: "page",
+        id: page.id,
         title: page.name,
         image,
         url: page.primaryRoute ? `${baseUrl}${page.primaryRoute.path}` : null,
@@ -121,7 +125,8 @@ export async function search(term, contentTypes) {
             product.images.length > 0 ? product.images[0].url : null;
 
           results.push({
-            id: `product:${product.id}`,
+            type: "product",
+            id: product.id,
             title: product.name,
             image,
             url: product.primaryRoute
@@ -137,7 +142,8 @@ export async function search(term, contentTypes) {
             category.images.length > 0 ? category.images[0].url : null;
 
           results.push({
-            id: `category:${category.id}`,
+            type: "category",
+            id: category.id,
             title: category.name,
             image,
             url: category.primaryRoute
@@ -164,9 +170,7 @@ export async function search(term, contentTypes) {
   return results;
 }
 
-export async function get(identifier) {
-  const [type, id] = identifier.split(":");
-
+async function getItem(type, id) {
   if (type === "product") {
     const result = await jetshopFetch(
       `
@@ -193,6 +197,7 @@ query product($id: Int!) {
       const { name, images, primaryRoute } = result.data.product;
 
       return {
+        id,
         title: name,
         image: images.length ? images[0].url : null,
         url: primaryRoute ? `${baseUrl}${primaryRoute.path}` : null,
@@ -227,6 +232,7 @@ query category($id: Int!) {
       const { name, images, primaryRoute } = result.data.category;
 
       return {
+        id,
         title: name,
         image: images.length ? images[0].url : null,
         url: primaryRoute ? `${baseUrl}${primaryRoute.path}` : null,
@@ -261,6 +267,7 @@ query page($id: Int!) {
       const { name, images, primaryRoute } = result.data.page;
 
       return {
+        id,
         title: name,
         image: images.length ? images[0].url : null,
         url: primaryRoute ? `${baseUrl}${primaryRoute.path}` : null,
@@ -272,4 +279,8 @@ query page($id: Int!) {
   } else {
     return null;
   }
+}
+
+export function get(items) {
+  return Promise.all(items.map((item) => getItem(item.type, item.id)));
 }

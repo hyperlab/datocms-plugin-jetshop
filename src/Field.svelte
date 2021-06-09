@@ -1,58 +1,79 @@
 <script>
   import Results from "./Results.svelte";
   import { search, get } from "./jetshop";
-  import { value } from "./store";
+  import { items } from "./store";
 
   export let contentTypes = [],
-    placeholder = "Search term";
+    placeholder = "Search term",
+    minItems = 0,
+    maxItems = -1;
   let results = [];
 
   async function change(e) {
     const value = e.target.value;
 
-    if (value.length > 2) {
+    if (value.length >= 2) {
       results = await search(value, contentTypes);
+    } else {
+      results = [];
     }
   }
 
-  function deselect() {
-    value.set(null);
+  function deselect(id) {
+    items.update((val) => val.filter((item) => item.id !== id));
   }
 
-  $: promise = $value ? get($value) : null;
+  $: promise = $items ? get($items) : null;
 </script>
+
+{#if minItems === 0 && maxItems > -1}
+  <span>Select up to {maxItems} items</span>
+{:else if minItems === 0 && maxItems === -1}
+  <span>Select any number of items</span>
+{:else if minItems > 0 && maxItems !== -1}
+  <span>Select between {minItems} and {maxItems} items</span>
+{/if}
 
 {#if promise}
   {#await promise}
     <p>Loading...</p>
-  {:then data}
-    <div class="card">
-      {#if data.image}
-        <img src={`${data.image}?extend=copy&width=128&method=crop&height=128&quality=100`} alt="Summary" />
-      {/if}
-      <div class="details">
-        <span>{data.type}</span>
-        <h3>{data.title}</h3>
-        <div class="controls">
-          <a href={data.url} target="_blank">View on site</a>
-          <button on:click={deselect}
-            ><svg
-              height="20"
-              width="20"
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-              focusable="false"
-              class="css-19bqh2r"
-              ><path
-                d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"
-              /></svg
-            ></button
-          >
+  {:then items}
+    <div class="items">
+      {#each items as item}
+        <div class="card">
+          {#if item.image}
+            <img
+              src={`${item.image}?extend=copy&width=128&method=crop&height=128&quality=100`}
+              alt="Summary"
+            />
+          {/if}
+          <div class="details">
+            <span>{item.type}</span>
+            <h3>{item.title}</h3>
+            <div class="controls">
+              <a href={item.url} target="_blank">View on site</a>
+              <button on:click={() => deselect(item.id)}
+                ><svg
+                  height="20"
+                  width="20"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                  focusable="false"
+                  class="css-19bqh2r"
+                  ><path
+                    d="M14.348 14.849c-0.469 0.469-1.229 0.469-1.697 0l-2.651-3.030-2.651 3.029c-0.469 0.469-1.229 0.469-1.697 0-0.469-0.469-0.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-0.469-0.469-0.469-1.228 0-1.697s1.228-0.469 1.697 0l2.652 3.031 2.651-3.031c0.469-0.469 1.228-0.469 1.697 0s0.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c0.469 0.469 0.469 1.229 0 1.698z"
+                  /></svg
+                ></button
+              >
+            </div>
+          </div>
         </div>
-      </div>
+      {/each}
     </div>
   {/await}
-{:else}
+{/if}
+
+{#if maxItems === -1 || $items.length < maxItems}
   <div class="field">
     <input type="text" {placeholder} on:input={change} />
   </div>
@@ -62,6 +83,11 @@
 {/if}
 
 <style>
+  .items {
+    display: flex;
+    flex-direction: row;
+  }
+
   .card {
     display: flex;
     flex-direction: row;

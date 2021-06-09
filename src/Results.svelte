@@ -1,11 +1,11 @@
 <script>
-  import { value } from "./store";
+  import { items } from "./store";
 
   export let results = [];
   let active;
 
   $: if (results) {
-    active = results[0].id;
+    active = results[0];
   }
 
   function handleKeyDown(event) {
@@ -15,20 +15,26 @@
     if (keyCode === 38) {
       // Arrow up
       if (activeIndex > 0) {
-        active = results[activeIndex - 1].id;
+        active = results[activeIndex - 1];
       } else {
-        active = results[results.length - 1].id;
+        active = results[results.length - 1];
       }
     } else if (keyCode === 40) {
       // Arrow down
       if (activeIndex + 1 < results.length) {
-        active = results[activeIndex + 1].id;
+        active = results[activeIndex + 1];
       } else {
-        active = results[0].id;
+        active = results[0];
       }
     } else if (keyCode === 13) {
       // Enter
-      value.set(active);
+      items.update((val) =>
+        val.concat({
+          source: 'jetshop',
+          type: active.type,
+          id: active.id,
+        })
+      );
     }
   }
 </script>
@@ -39,17 +45,24 @@
   <ul>
     {#each results as result (result.id)}
       <li
-        class:active={active === result.id}
-        class:selected={$value === result.id}
-        on:mouseenter={() => (active = result.id)}
-        on:click={() => value.set(result.id)}
+        class:active={active === result}
+        class:selected={$items.find((item) => item.id === result.id)}
+        on:mouseenter={() => (active = result)}
+        on:click={() =>
+          items.update((val) =>
+            val.concat({
+              source: 'jetshop',
+              type: result.type,
+              id: result.id,
+            })
+          )}
       >
         {#if result.image}<img
             src={`${result.image}?extend=copy&width=32&method=crop&height=32&quality=100`}
             alt="Summary"
           />{/if}
         <h3>{result.title}</h3>
-        <span>{result.id.split(":")[0]}</span>
+        <span>{result.type}</span>
       </li>
     {/each}
   </ul>

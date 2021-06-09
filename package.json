@@ -1,6 +1,6 @@
 {
   "name": "datocms-plugin-jetshop",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/hyperlab/datocms-plugin-jetshop",
   "repository": {
     "type": "git",
@@ -12,13 +12,13 @@
     "field-editor",
     "jetshop"
   ],
-  "description": "A string field editor to lookup products, categories and content pages from Jetshop.",
+  "description": "A json field editor to lookup products, categories and content pages from Jetshop.",
   "datoCmsPlugin": {
     "title": "Jetshop",
     "previewImage": "public/preview.gif",
     "entryPoint": "public/index.html",
     "fieldTypes": [
-      "string"
+      "json"
     ],
     "pluginType": "field_editor",
     "parameters": {
@@ -34,9 +34,29 @@
           "label": "API token",
           "type": "string",
           "hint": "The API token used when connecting to Jetshop's Store API."
+        },
+        {
+          "id": "locales",
+          "label": "Locales to channels map",
+          "type": "json",
+          "hint": "An object containing a map between DatoCMS locales and Jetshop channels"
         }
       ],
       "instance": [
+        {
+          "id": "minItems",
+          "label": "Minimum items",
+          "type": "integer",
+          "hint": "Minimum amount of selected items",
+          "default": 0
+        },
+        {
+          "id": "maxItems",
+          "label": "Maximum items",
+          "type": "integer",
+          "hint": "Maximum amount of selected items, -1 for no limit",
+          "default": -1
+        },
         {
           "id": "searchProducts",
           "label": "Search products",
