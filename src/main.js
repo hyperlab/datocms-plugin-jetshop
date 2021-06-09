@@ -42,10 +42,15 @@ DatoCmsPlugin.init((plugin) => {
   });
 
   if (plugin.parameters.global) {
-    const channel =
-      (plugin.parameters.global.locales &&
-        plugin.parameters.global.locales[plugin.locale]) ||
-      1;
+    let locales;
+
+    try {
+      locales = JSON.parse(plugin.parameters.global.locales);
+    } catch (e) {
+      locales = {};
+    }
+
+    const channel = locales[plugin.locale] || 1;
 
     config(
       plugin.parameters.global.token,
